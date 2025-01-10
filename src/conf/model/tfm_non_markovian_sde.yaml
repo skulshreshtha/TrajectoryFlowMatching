@@ -1,0 +1,46 @@
+# Base configuration for Non-Markovian SDE model
+_target_: src.model.base_models.SDEModel
+
+# Model architecture settings
+hidden_dim: 256
+num_layers: 4
+activation: "relu"
+dropout: 0.1
+
+# Non-Markovian SDE specific parameters
+sde_type: "non_markovian"
+lambda_reversion: 1.0  # Mean reversion rate for noise process
+sigma: 0.5  # Diffusion intensity
+reverse: false
+
+# Training settings
+learning_rate: 1e-3
+weight_decay: 1e-5
+scheduler:
+  _target_: torch.optim.lr_scheduler.CosineAnnealingLR
+  T_max: 100
+  eta_min: 1e-6
+
+# Loss function weights
+loss:
+  reconstruction_weight: 1.0
+  kl_weight: 0.1
+  mmd_weight: 0.1
+
+# Data dimensions
+input_dim: ${data.input_dim}  # Will be inherited from data config
+latent_dim: ${data.latent_dim}  # Will be inherited from data config
+
+# Augmented state settings
+augmented_dim: ${eval:2 * ${data.latent_dim}}  # Double the dimension to account for ξ_t
+
+# Additional model components
+use_attention: true
+attention_heads: 4
+attention_layers: 2
+
+# Numerical solver settings
+solver:
+  method: "euler"
+  dt: 0.01
+  adaptive_step_size: true 

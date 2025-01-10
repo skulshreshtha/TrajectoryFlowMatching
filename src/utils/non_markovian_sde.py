@@ -31,21 +31,32 @@ class NonMarkovianSDE(torch.nn.Module):
         xi = y[..., dim:]
         return x, xi
 
-    def f(self, t, y):
+    def f(self, t, y, condition=None):
         """
         Drift function for the augmented system [x_t, ξ_t]
         Returns: [f_θ(x_t, t) + ξ_t, -λξ_t]
         """
         if self.reverse:
             t = 1 - t
-            
+                
         x, xi = self.augmented_state(y)
         
+        # Prepare time tensor
+        if not torch.is_tensor(t):
+            t = torch.tensor(t)
+        if t.dim() == 0:
+            t = t.view(1, 1)
+        elif t.dim() == 1:
+            t = t.view(-1, 1)
+        
         # Compute neural network drift for x
-        if len(t.shape) == len(x.shape):
-            nn_input = torch.cat([x, t], 1)
+        if condition is not None:
+            # Make sure t matches batch size
+            t_expanded = t if t.shape[0] == x.shape[0] else t.expand(x.shape[0], -1)
+            nn_input = torch.cat([x, condition, t_expanded], dim=1)
         else:
-            nn_input = torch.cat([x, t.repeat(x.shape[0])[:, None]], 1)
+            t_expanded = t if t.shape[0] == x.shape[0] else t.expand(x.shape[0], -1)
+            nn_input = torch.cat([x, t_expanded], dim=1)
         
         f_theta = self.drift(nn_input)
         
@@ -54,7 +65,7 @@ class NonMarkovianSDE(torch.nn.Module):
         
         # Drift for ξ_t: -λξ_t
         xi_drift = -self.lambda_reversion * xi
-        
+                
         # Combine drifts for augmented system
         return torch.cat([x_drift, xi_drift], dim=-1)
 
@@ -82,4 +93,4 @@ class NonMarkovianSDE(torch.nn.Module):
         xi0 = torch.randn(batch_size, dim, device=x0.device) * self.sigma
         
         # Return augmented state [x0, ξ0]
-        return torch.cat([x0, xi0], dim=-1)
+        return torch.cat([x0, xi0], dim=-1) 

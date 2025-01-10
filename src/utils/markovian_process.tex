@@ -1,0 +1,27 @@
+\documentclass{article}
+\usepackage{amsmath}
+
+\begin{document}
+
+The dynamics of the Neural SDE with a non-Markovian diffusion term are given by:
+
+\[
+dx_t = f_\theta(x_t, t) \, dt + \xi_t \, dt,
+\]
+
+where \( \xi_t \) evolves according to:
+
+\[
+d\xi_t = -\lambda \xi_t \, dt + \sigma \, dW_t.
+\]
+
+Here:
+\begin{itemize}
+    \item \( f_\theta(x_t, t) \) is the neural network parameterized drift term,
+    \item \( \xi_t \) represents the non-Markovian diffusion term,
+    \item \( \lambda > 0 \) is the rate of mean reversion,
+    \item \( \sigma \) is the diffusion intensity,
+    \item \( W_t \) is a standard Wiener process.
+\end{itemize}
+
+\end{document}

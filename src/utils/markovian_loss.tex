@@ -1,0 +1,27 @@
+\documentclass{article}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsfonts}
+\usepackage{bm}
+
+\begin{document}
+
+The flow matching loss with a Markovian diffusion term can be expressed as:
+
+\[
+\mathcal{L}_{\text{flow}} = \mathbb{E}_{q(x_0)} \mathbb{E}_{p(t)} \mathbb{E}_{q(x_t | x_0)} \left[ \left\| f_\theta(x_t, t) - \frac{\partial x_t}{\partial t} \right\|^2 \right],
+\]
+
+where:
+\begin{itemize}
+    \item \( q(x_t | x_0) \) is the Markovian diffusion process satisfying
+    \[
+    x_t = x_0 + \int_0^t \sqrt{2\beta(s)} \, dW_s,
+    \]
+    where \( \beta(s) \) is the diffusion coefficient and \( W_s \) is a standard Wiener process (Brownian motion).
+    \item \( f_\theta(x_t, t) \) is the parameterized flow field being optimized.
+    \item \( \frac{\partial x_t}{\partial t} \) represents the true dynamics of the process.
+\end{itemize}
+
+\end{document}
+

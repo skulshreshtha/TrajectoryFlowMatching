@@ -3,13 +3,13 @@ defaults:
   - data: eICU
   - model: tfm_sde
 
-wandb_logging: true
+wandb_logging: false
 wandb_project: clinical_trajectory
 wandb_dir: wandb_log/
 ckpt_dir: checkpoints/
 max_epochs: 200
 max_time: 00:48:00:00
 check_val_every_n_epoch: 10
-skip_training: false
+skip_training: true
 mode: None 
 seed: 42
